@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="28" fill="#0f766e"/>
+  <circle cx="38" cy="44" r="13" fill="#ecfeff"/>
+  <circle cx="88" cy="36" r="15" fill="#dbeafe"/>
+  <circle cx="82" cy="88" r="18" fill="#f0fdf4"/>
+  <path d="M50 44h22M45 54l25 24" stroke="#a7f3d0" stroke-width="8" stroke-linecap="round"/>
+  <text x="64" y="75" text-anchor="middle" font-family="Inter,Segoe UI,sans-serif" font-size="27" font-weight="800" fill="#042f2e">M4</text>
+</svg>

@@ -1,0 +1,10 @@
+{
+  "name": "mk4-mindmapper",
+  "version": "0.1.0",
+  "description": "Dependency-free installable mind mapping software prototype built from Specification.docx.",
+  "private": true,
+  "scripts": {
+    "start": "powershell -ExecutionPolicy Bypass -File scripts/start.ps1",
+    "test": "powershell -ExecutionPolicy Bypass -File scripts/validate.ps1"
+  }
+}

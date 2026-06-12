@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8fafc" />
+    <title>MK4 MindMapper</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">M4</span>
+          <span>MK4 MindMapper</span>
+        </div>
+        <nav class="menus" aria-label="Application menu">
+          <button data-menu="file">File</button>
+          <button data-menu="edit">Edit</button>
+          <button data-menu="view">View</button>
+          <button data-menu="insert">Insert</button>
+          <button data-menu="export">Export</button>
+        </nav>
+        <div class="top-actions">
+          <button id="themeToggle" title="Toggle light/dark mode">Theme</button>
+          <button id="presentationBtn" title="Presentation/focus mode">Focus</button>
+        </div>
+      </header>
+
+      <section class="toolbar" aria-label="Mind map toolbar">
+        <button id="newBtn">New</button>
+        <button id="openBtn">Open</button>
+        <button id="saveBtn" class="primary">Save .mk4map</button>
+        <span class="separator"></span>
+        <button id="addChildBtn">Child</button>
+        <button id="addSiblingBtn">Sibling</button>
+        <button id="floatingBtn">Floating</button>
+        <button id="relationshipBtn">Relationship</button>
+        <button id="boundaryBtn">Boundary</button>
+        <button id="summaryBtn">Summary</button>
+        <span class="separator"></span>
+        <button id="undoBtn">Undo</button>
+        <button id="redoBtn">Redo</button>
+        <label class="search-box">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Topic, note, tag" />
+        </label>
+        <input id="fileInput" type="file" hidden accept=".mk4map,.json,.xmind,.mm,.opml,.md,.txt,.csv,.xml" />
+        <input id="imageInput" type="file" hidden accept="image/*" />
+      </section>
+
+      <main class="workspace">
+        <aside class="panel left-panel" aria-label="Topic Tree">
+          <div class="panel-header">
+            <h2>Topic Tree</h2>
+            <button id="collapseAllBtn" title="Collapse all branches">Collapse</button>
+          </div>
+          <div id="recoveryBanner" class="recovery-banner" hidden>
+            Autosaved work found.
+            <button id="recoverBtn">Recover</button>
+            <button id="dismissRecoveryBtn">Dismiss</button>
+          </div>
+          <div id="treePanel" class="tree-panel"></div>
+        </aside>
+
+        <section class="canvas-wrap" aria-label="Infinite Canvas">
+          <svg id="canvas" class="mind-canvas" role="img" aria-label="Mind map canvas">
+            <defs>
+              <filter id="nodeShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#0f172a" flood-opacity="0.12" />
+              </filter>
+              <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+              </marker>
+            </defs>
+            <g id="mapViewport"></g>
+          </svg>
+          <div id="inlineEditor" class="inline-editor" hidden>
+            <input id="inlineEditorInput" />
+          </div>
+          <div id="minimap" class="minimap" aria-hidden="true"></div>
+        </section>
+
+        <aside class="panel right-panel" aria-label="Properties">
+          <div class="panel-header">
+            <h2>Properties</h2>
+            <button id="attachImageBtn">Image</button>
+          </div>
+          <div class="inspector">
+            <label>Title <input id="titleInput" /></label>
+            <label>Notes <textarea id="notesInput" rows="6" placeholder="Markdown notes, links, decisions"></textarea></label>
+            <label>Labels <input id="labelsInput" placeholder="comma separated" /></label>
+            <label>Tags <input id="tagsInput" placeholder="#planning, #research" /></label>
+            <div class="field-row">
+              <label>Shape
+                <select id="shapeInput">
+                  <option>rounded</option>
+                  <option>rectangle</option>
+                  <option>ellipse</option>
+                  <option>diamond</option>
+                  <option>capsule</option>
+                  <option>hexagon</option>
+                  <option>cloud</option>
+                </select>
+              </label>
+              <label>Font <input id="fontSizeInput" type="number" min="10" max="56" /></label>
+            </div>
+            <div class="field-row">
+              <label>Fill <input id="fillInput" type="color" /></label>
+              <label>Text <input id="textColorInput" type="color" /></label>
+              <label>Line <input id="borderInput" type="color" /></label>
+            </div>
+            <div class="field-row">
+              <button id="boldBtn">Bold</button>
+              <button id="italicBtn">Italic</button>
+              <button id="collapseBtn">Collapse</button>
+            </div>
+            <label>Layout
+              <select id="layoutInput">
+                <option value="right">Right</option>
+                <option value="left">Left</option>
+                <option value="balanced">Balanced</option>
+                <option value="tree">Tree</option>
+              </select>
+            </label>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="statusbar">
+        <span id="statusText">Ready</span>
+        <span id="selectionText">Root Idea</span>
+        <div class="zoom-controls">
+          <button id="zoomOutBtn">-</button>
+          <input id="zoomRange" type="range" min="5" max="1000" value="100" />
+          <button id="zoomInBtn">+</button>
+          <button id="fitBtn">Fit</button>
+          <span id="zoomText">100%</span>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
