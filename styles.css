@@ -471,3 +471,79 @@ textarea {
     transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
   }
 }
+
+/* --- NEW UX IMPROVEMENTS --- */
+
+/* Dropdown Menus */
+.menu-container {
+  position: relative;
+}
+
+.dropdown-menu,
+.context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  z-index: 100;
+}
+
+.context-menu {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  min-width: 180px;
+}
+
+.dropdown-menu button,
+.context-menu button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-menu button:hover,
+.context-menu button:hover {
+  background: var(--surface-soft);
+  color: var(--accent);
+}
+
+.context-menu button.danger:hover {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 0;
+}
+
+.shortcut {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* Hover States for Nodes */
+.topic-node:hover .topic-body {
+  stroke: color-mix(in srgb, var(--accent) 50%, var(--line-strong));
+  stroke-width: 3px;
+  cursor: pointer;
+}
+
+.topic-node.selected:hover .topic-body {
+  stroke: var(--accent-2);
+}

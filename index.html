@@ -16,15 +16,62 @@
           <span>MK4 MindMapper</span>
         </div>
         <nav class="menus" aria-label="Application menu">
-          <button data-menu="file">File</button>
-          <button data-menu="edit">Edit</button>
-          <button data-menu="view">View</button>
-          <button data-menu="insert">Insert</button>
-          <button data-menu="export">Export</button>
+          <div class="menu-container">
+            <button data-menu="file">File</button>
+            <div id="fileMenu" class="dropdown-menu" hidden>
+              <button data-action="new">New</button>
+              <button data-action="open">Open</button>
+              <button data-action="save">Save .mk4map</button>
+            </div>
+          </div>
+          <div class="menu-container">
+            <button data-menu="edit">Edit</button>
+            <div id="editMenu" class="dropdown-menu" hidden>
+              <button data-action="undo">Undo</button>
+              <button data-action="redo">Redo</button>
+              <button data-action="duplicate">Duplicate</button>
+              <button data-action="delete">Delete</button>
+            </div>
+          </div>
+          <div class="menu-container">
+            <button data-menu="view">View</button>
+            <div id="viewMenu" class="dropdown-menu" hidden>
+              <button data-action="fit">Fit to Screen</button>
+              <button data-action="theme">Toggle Theme</button>
+              <button data-action="focus">Focus Mode</button>
+            </div>
+          </div>
+          <div class="menu-container">
+            <button data-menu="insert">Insert</button>
+            <div id="insertMenu" class="dropdown-menu" hidden>
+              <button data-action="child">Child Topic</button>
+              <button data-action="sibling">Sibling Topic</button>
+              <button data-action="floating">Floating Topic</button>
+              <button data-action="relationship">Relationship</button>
+              <button data-action="boundary">Boundary</button>
+              <button data-action="summary">Summary</button>
+              <button data-action="image">Image</button>
+            </div>
+          </div>
+          <div class="menu-container">
+            <button data-menu="export">Export</button>
+            <div id="exportMenu" class="dropdown-menu" hidden>
+              <button data-action="export-mk4">MK4 Map</button>
+              <button data-action="export-xmind">XMind</button>
+              <button data-action="export-png">PNG Image</button>
+              <button data-action="export-svg">SVG Vector</button>
+              <button data-action="export-md">Markdown</button>
+              <button data-action="export-json">JSON</button>
+            </div>
+          </div>
         </nav>
         <div class="top-actions">
-          <button id="themeToggle" title="Toggle light/dark mode">Theme</button>
-          <button id="presentationBtn" title="Presentation/focus mode">Focus</button>
+          <button id="themeToggle" title="Toggle light/dark mode">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+          <button id="presentationBtn" title="Presentation/focus mode">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+          </button>
         </div>
       </header>
 
@@ -126,6 +173,15 @@
             </label>
           </div>
         </aside>
+        <div id="contextMenu" class="context-menu" hidden>
+        <button data-action="child">Add Child <span class="shortcut">Tab</span></button>
+        <button data-action="sibling">Add Sibling <span class="shortcut">Enter</span></button>
+        <div class="menu-divider"></div>
+        <button data-action="edit">Edit Text <span class="shortcut">F2</span></button>
+        <button data-action="duplicate">Duplicate <span class="shortcut">Ctrl+V</span></button>
+        <div class="menu-divider"></div>
+        <button data-action="delete" class="danger">Delete <span class="shortcut">Del</span></button>
+      </div>
       </main>
 
       <footer class="statusbar">

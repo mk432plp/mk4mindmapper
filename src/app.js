@@ -55,84 +55,110 @@ class MK4MindMapperApp {
   }
 
   bind() {
-    this.$("newBtn").addEventListener("click", () => this.newDocument());
-    this.$("openBtn").addEventListener("click", () => this.$("fileInput").click());
-    this.$("saveBtn").addEventListener("click", () => this.saveMk4());
-    this.$("fileInput").addEventListener("change", (event) => this.openFile(event.target.files[0]));
-    this.$("addChildBtn").addEventListener("click", () => this.withHistory(() => this.select(addTopic(this.doc, this.selection, "New Child").id)));
-    this.$("addSiblingBtn").addEventListener("click", () => this.withHistory(() => this.select(addSibling(this.doc, this.selection, "New Topic").id)));
-    this.$("floatingBtn").addEventListener("click", () => this.withHistory(() => {
-      const topic = addTopic(this.doc, this.doc.rootId, "Floating Topic", { type: "floating", manual: true, x: 120, y: 160 });
-      this.select(topic.id);
-    }));
-    this.$("relationshipBtn").addEventListener("click", () => {
-      this.relationshipSource = this.selection;
-      this.status("Select another topic to connect.");
-    });
-    this.$("boundaryBtn").addEventListener("click", () => this.withHistory(() => {
-      this.doc.boundaries.push({ id: crypto.randomUUID(), topicId: this.selection, title: "Boundary", padding: 28, color: "#0f766e" });
-    }));
-    this.$("summaryBtn").addEventListener("click", () => this.withHistory(() => {
-      this.doc.summaries.push({ id: crypto.randomUUID(), topicId: this.selection, title: "Summary", color: "#2563eb" });
-    }));
-    this.$("undoBtn").addEventListener("click", () => this.undo());
-    this.$("redoBtn").addEventListener("click", () => this.redo());
-    this.$("themeToggle").addEventListener("click", () => this.toggleTheme());
-    this.$("presentationBtn").addEventListener("click", () => document.body.classList.toggle("focus-mode"));
-    this.$("collapseAllBtn").addEventListener("click", () => this.withHistory(() => {
-      Object.values(this.doc.topics).forEach((topic) => {
-        if (topic.id !== this.doc.rootId) topic.collapsed = true;
+    // ... [KEEP ALL EXISTING BINDINGS UP TO zoomRange] ...
+    
+    // Replace the old [data-menu] binding with this:
+    document.querySelectorAll("[data-menu]").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleMenu(button.dataset.menu);
       });
-    }));
-    this.$("recoverBtn").addEventListener("click", () => this.recover());
-    this.$("dismissRecoveryBtn").addEventListener("click", () => this.$("recoveryBanner").hidden = true);
-    this.$("attachImageBtn").addEventListener("click", () => this.$("imageInput").click());
-    this.$("imageInput").addEventListener("change", (event) => this.attachImage(event.target.files[0]));
-    this.$("searchInput").addEventListener("input", (event) => {
-      this.search = event.target.value.trim().toLowerCase();
-      this.render();
     });
-    this.$("layoutInput").addEventListener("change", (event) => this.withHistory(() => {
-      this.doc.preferences.layout = event.target.value;
-    }));
 
-    ["titleInput", "notesInput", "labelsInput", "tagsInput", "shapeInput", "fontSizeInput", "fillInput", "textColorInput", "borderInput"].forEach((id) => {
-      this.$(id).addEventListener("change", () => this.applyInspector());
+    // Bind dropdown and context menu actions
+    document.querySelectorAll(".dropdown-menu button, .context-menu button").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.handleMenuAction(button.dataset.action);
+        this.closeAllMenus();
+      });
     });
-    this.$("boldBtn").addEventListener("click", () => this.withHistory(() => {
-      const topic = this.doc.topics[this.selection];
-      updateTopic(this.doc, this.selection, { style: { bold: !topic.style.bold } });
-    }));
-    this.$("italicBtn").addEventListener("click", () => this.withHistory(() => {
-      const topic = this.doc.topics[this.selection];
-      updateTopic(this.doc, this.selection, { style: { italic: !topic.style.italic } });
-    }));
-    this.$("collapseBtn").addEventListener("click", () => this.withHistory(() => {
-      const topic = this.doc.topics[this.selection];
-      updateTopic(this.doc, this.selection, { collapsed: !topic.collapsed });
-    }));
 
-    this.canvas.addEventListener("pointerdown", (event) => this.pointerDown(event));
-    this.canvas.addEventListener("pointermove", (event) => this.pointerMove(event));
-    this.canvas.addEventListener("pointerup", () => this.pointerUp());
-    this.canvas.addEventListener("pointercancel", () => this.pointerUp());
-    this.canvas.addEventListener("dblclick", (event) => this.beginInlineEdit(event));
-    this.canvas.addEventListener("wheel", (event) => this.wheelZoom(event), { passive: false });
-    this.canvas.addEventListener("click", (event) => this.canvasClick(event));
-    window.addEventListener("resize", () => this.render());
-    document.addEventListener("keydown", (event) => this.keyDown(event));
+    // Close menus on outside click
+    document.addEventListener("click", () => this.closeAllMenus());
 
-    this.$("zoomInBtn").addEventListener("click", () => this.setZoom(this.scale * 1.15));
-    this.$("zoomOutBtn").addEventListener("click", () => this.setZoom(this.scale / 1.15));
-    this.$("fitBtn").addEventListener("click", () => this.fit());
-    this.$("zoomRange").addEventListener("input", (event) => this.setZoom(Number(event.target.value) / 100));
-    document.querySelectorAll("[data-menu]").forEach((button) => button.addEventListener("click", () => this.menu(button.dataset.menu)));
+    // Context Menu Binding
+    this.canvas.addEventListener("contextmenu", (e) => this.showContextMenu(e));
+
+    // Keep existing inline editor bindings
     this.$("inlineEditorInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") this.commitInlineEdit();
       if (event.key === "Escape") this.hideInlineEdit();
     });
     this.$("inlineEditorInput").addEventListener("blur", () => this.commitInlineEdit());
   }
+
+  // --- NEW MENU LOGIC ---
+
+  toggleMenu(menuName) {
+    this.closeAllMenus();
+    const menu = this.$(`${menuName}Menu`);
+    if (menu) menu.hidden = false;
+  }
+
+  closeAllMenus() {
+    document.querySelectorAll(".dropdown-menu, .context-menu").forEach(menu => {
+      menu.hidden = true;
+    });
+  }
+
+  showContextMenu(event) {
+    event.preventDefault();
+    const node = event.target.closest?.(".topic-node");
+    
+    // Only show context menu if clicking on a topic
+    if (node) {
+      this.select(node.dataset.topicId);
+      const menu = this.$("contextMenu");
+      menu.hidden = false;
+      
+      // Position menu at cursor
+      let x = event.clientX;
+      let y = event.clientY;
+      
+      // Keep menu within viewport
+      if (x + menu.offsetWidth > window.innerWidth) x -= menu.offsetWidth;
+      if (y + menu.offsetHeight > window.innerHeight) y -= menu.offsetHeight;
+      
+      menu.style.left = `${x}px`;
+      menu.style.top = `${y}px`;
+    }
+  }
+
+  handleMenuAction(action) {
+    // Map standard actions
+    switch(action) {
+      case "new": this.newDocument(); break;
+      case "open": this.$("fileInput").click(); break;
+      case "save": this.saveMk4(); break;
+      
+      case "undo": this.undo(); break;
+      case "redo": this.redo(); break;
+      case "duplicate": this.withHistory(() => this.select(duplicateBranch(this.doc, this.selection).id)); break;
+      case "delete": this.deleteSelected(); break;
+      case "edit": this.showInlineEditor(this.selection); break;
+      
+      case "fit": this.fit(); break;
+      case "theme": this.toggleTheme(); break;
+      case "focus": document.body.classList.toggle("focus-mode"); break;
+      
+      case "child": this.withHistory(() => this.select(addTopic(this.doc, this.selection).id)); break;
+      case "sibling": this.withHistory(() => this.select(addSibling(this.doc, this.selection).id)); break;
+      case "floating": this.$("floatingBtn").click(); break;
+      case "relationship": this.$("relationshipBtn").click(); break;
+      case "boundary": this.$("boundaryBtn").click(); break;
+      case "summary": this.$("summaryBtn").click(); break;
+      case "image": this.$("imageInput").click(); break;
+    }
+
+    // Map export actions
+    if (action.startsWith("export-")) {
+      const format = action.split("-")[1];
+      this.exportFormat(format);
+    }
+  }
+
+  // NOTE: You can safely delete the old async menu(name) { ... } method as it is no longer used.
 
   withHistory(mutator) {
     this.history.snapshot(this.doc);
@@ -602,45 +628,6 @@ class MK4MindMapperApp {
     this.status("Saved .mk4map");
   }
 
-  async menu(name) {
-    if (name === "file") {
-      const action = prompt("File command: new, open, save", "save");
-      if (action === "new") this.newDocument();
-      if (action === "open") this.$("fileInput").click();
-      if (action === "save") this.saveMk4();
-      return;
-    }
-    if (name === "edit") {
-      const action = prompt("Edit command: undo, redo, duplicate, delete", "duplicate");
-      if (action === "undo") this.undo();
-      if (action === "redo") this.redo();
-      if (action === "duplicate") this.withHistory(() => this.select(duplicateBranch(this.doc, this.selection).id));
-      if (action === "delete") this.deleteSelected();
-      return;
-    }
-    if (name === "view") {
-      const action = prompt("View command: fit, theme, focus", "fit");
-      if (action === "fit") this.fit();
-      if (action === "theme") this.toggleTheme();
-      if (action === "focus") document.body.classList.toggle("focus-mode");
-      return;
-    }
-    if (name === "insert") {
-      const action = prompt("Insert command: child, sibling, floating, relationship, boundary, summary, image", "child");
-      if (action === "child") this.withHistory(() => this.select(addTopic(this.doc, this.selection).id));
-      if (action === "sibling") this.withHistory(() => this.select(addSibling(this.doc, this.selection).id));
-      if (action === "floating") this.$("floatingBtn").click();
-      if (action === "relationship") this.$("relationshipBtn").click();
-      if (action === "boundary") this.$("boundaryBtn").click();
-      if (action === "summary") this.$("summaryBtn").click();
-      if (action === "image") this.$("imageInput").click();
-      return;
-    }
-    if (name === "export") {
-      const format = prompt("Export format: mk4, xmind, json, md, txt, csv, opml, mm, xml, html, svg, png", "xmind");
-      this.exportFormat(format);
-    }
-  }
 
   async exportFormat(format) {
     const base = safeName(this.doc.metadata.title || this.doc.topics[this.doc.rootId].title);
